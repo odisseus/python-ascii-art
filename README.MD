@@ -430,7 +430,7 @@ step_two = [[(6, 9, 8, 9), (3, 1, 8, 0)],
             [(7, 0, 9, 2), (5, 3, 5, 6)]]
 ```
 
-#### 3. Grouping our row slices into 
+#### 3. Grouping our row slices together 
 
 
 Following this step, the slices are then partitioned again into segments of length `square`.

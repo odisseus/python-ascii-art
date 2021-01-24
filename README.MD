@@ -3,6 +3,9 @@ A command line tool for generating ascii art from reference images.
 
 Examples are in the 'pictures' directory, and an explanation of how it works is below.
 
+# Usage
+`python3 main.py -c <compression factor> -i <input file> -o <output file>`
+
 # Technical details
 
 Here be dragons.

@@ -1,10 +1,16 @@
+#!/bin/python
 import os
+import sys
+import getopt
 from itertools import zip_longest
 from statistics import mean
-
 from PIL import Image, ImageDraw, ImageFont
 
+# Chars to be used in ascii art
 chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM,;'[]<>?:{}\\1234567890-=!@#$%^&*()_+"
+
+# Dict that that maps characters to their 'lightness' value
+char_dict = {}
 
 
 # I got this from stack overflow, partitions a sequence and fills in a value when there are no values left to take
@@ -22,30 +28,12 @@ def write_alphabet():
         img.save("image/" + c + ".png")
 
 
-# Make character images if they don't exist
-if not os.path.exists("image"):
-    os.mkdir("image")
-    write_alphabet()
-
-# Dict that that maps characters to their 'lightness' value
-charmap = {}
-
-# Read characters into dict
-for c in chars:
-    img = Image.open("image/" + c + ".png").convert('L')
-    avg = mean(img.getdata())
-    charmap[avg] = c
-    print(c + ": " + str(avg))
-
-chars = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM,;'[]<>?:{}\\1234567890-=!@#$%^&*()_+"
-
-
 def encode_image(image, square):
     width, _ = image.size
     # Get pixels
     pixels = [pixel[0] for pixel in image.getdata()]
     # Offset lowest pixel lightness by lowest character lightness
-    lowest = min(int(x) for x in list(charmap))
+    lowest = min(int(x) for x in list(char_dict))
     # This might be a bad idea idk
     pixels = [lowest + lightness for lightness in pixels]
     # Group the continuous list into rows using image width
@@ -66,7 +54,7 @@ def encode_image(image, square):
 
 
 def get_char_for_point(point):
-    char = charmap[min(list(charmap), key=lambda x: abs(x - point))]
+    char = char_dict[min(list(char_dict), key=lambda x: abs(x - point))]
     return char + char
 
 
@@ -75,9 +63,54 @@ def image_to_string(image, square):
     return "\n".join(["".join([get_char_for_point(point) for point in row]) for row in encoded])
 
 
-# ascii_smile = image_to_string(Image.open("test/smile.png").convert("LA"), 16)
-# ascii_star = image_to_string(Image.open("test/star.png").convert("LA"), 4)
-# ascii_hello = image_to_string(Image.open("test/hello.png").convert("LA"), 2)
-# ascii_dazzle = image_to_string(Image.open("test/dazzle2.png").convert("LA"), 6)
-ascii_stirner = image_to_string(Image.open("test/stirner.png").convert("LA"), 12)
-print(ascii_stirner)
+def print_usage():
+    print("main.py -c <compression factor> -i <input file> -o <output file>")
+
+
+def convert_to_ascii(input_path, output_path, compression_factor):
+    # Make character images if they don't exist
+    if not os.path.exists("image"):
+        os.mkdir("image")
+        write_alphabet()
+
+    # Read characters into dict
+    for c in chars:
+        img = Image.open("image/" + c + ".png").convert('L')
+        avg = mean(img.getdata())
+        char_dict[avg] = c
+
+    # Convert specified file with specified compression factor
+    image = Image.open(input_path).convert("LA")
+    ascii_art = image_to_string(image, compression_factor)
+
+    # If output file is not empty, write the result to it
+    if output_path != "":
+        with open(output_path, "w") as output_file:
+            output_file.write(ascii_art)
+
+    # Print result to terminal
+    print(ascii_art)
+
+
+def main(argv):
+    try:
+        opts, args = getopt.getopt(argv, "hi:o:c:")
+        input_file = ""
+        output_file = ""
+        compression_factor = 0
+        for opt, arg in opts:
+            if opt == "-h":
+                print_usage()
+            elif opt == "-i":
+                input_file = arg
+            elif opt == "-o":
+                output_file = arg
+            elif opt == "-c":
+                compression_factor = int(arg)
+        convert_to_ascii(input_file, output_file, compression_factor)
+    except getopt.GetoptError:
+        print_usage()
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

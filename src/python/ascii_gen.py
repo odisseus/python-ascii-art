@@ -1,6 +1,6 @@
 import os
-import sys
 import getopt
+import pkg_resources
 from itertools import zip_longest
 from statistics import mean
 from PIL import Image, ImageDraw, ImageFont
@@ -21,7 +21,8 @@ def partition_with_padding(iterable, n, pad=None):
 def write_alphabet():
     for c in chars:
         img = Image.new('RGB', (45, 75), (255, 255, 255))
-        fnt = ImageFont.truetype("roboto mono.ttf", 75)
+        font_path = pkg_resources.resource_filename(__name__, '../resources/roboto-mono.ttf')
+        fnt = ImageFont.truetype(font_path, 75)
         d = ImageDraw.Draw(img)
         d.text((0, -16), c, fill="black", font=fnt)
         img.save("image/" + c + ".png")
@@ -78,6 +79,9 @@ def convert_to_ascii(input_path, output_path, compression_factor):
         avg = mean(img.getdata())
         char_dict[avg] = c
 
+    # TODO move this check further up
+    if not os.path.exists(input_path):
+        raise Exception(f'Input file "{input_path}" does not exist')
     # Convert specified file with specified compression factor
     image = Image.open(input_path).convert("LA")
     ascii_art = image_to_string(image, compression_factor)
@@ -86,9 +90,9 @@ def convert_to_ascii(input_path, output_path, compression_factor):
     if output_path != "":
         with open(output_path, "w") as output_file:
             output_file.write(ascii_art)
-
-    # Print result to terminal
-    print(ascii_art)
+    else:
+        # Print result to terminal
+        print(ascii_art)
 
 
 def main(argv):
@@ -96,7 +100,7 @@ def main(argv):
         opts, args = getopt.getopt(argv, "hi:o:c:")
         input_file = ""
         output_file = ""
-        compression_factor = 0
+        compression_factor = 1
         for opt, arg in opts:
             if opt == "-h":
                 print_usage()
@@ -111,5 +115,4 @@ def main(argv):
         print_usage()
 
 
-if __name__ == "__main__":
-    main(sys.argv[1:])
+

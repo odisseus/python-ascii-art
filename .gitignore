@@ -183,3 +183,10 @@ pip-selfcheck.json
 /venv
 /asciitest.iml
 /image/
+
+# Bazel
+/bazel-*
+
+# IntelliJ Bazel plugin
+.ijwb/
+

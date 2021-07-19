@@ -1,4 +1,5 @@
 load("@my_deps//:requirements.bzl", "requirement")
+load("//:py_package_requirements.bzl", "py_package_requirements_rule")
 
 filegroup(
     name = "test_data_set",
@@ -23,4 +24,10 @@ py_test(
         ":test_utils",
         requirement("pytest"),
         ],
+    testonly = False,
+)
+
+py_package_requirements_rule(
+    name = "python-requirements.txt",
+    deps = ["ascii_art_generator_tests"]
 )

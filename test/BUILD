@@ -1,3 +1,5 @@
+load("@my_deps//:requirements.bzl", "requirement")
+
 filegroup(
     name = "test_data_set",
     srcs = glob([
@@ -16,5 +18,9 @@ py_test(
     main = "tests.py",
     size = "small",
     data = [":test_data_set"],
-    deps = ["//src:ascii_gen", ":test_utils"],
+    deps = [
+        "//src:ascii_gen",
+        ":test_utils",
+        requirement("pytest"),
+        ],
 )

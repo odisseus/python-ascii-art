@@ -2,7 +2,17 @@ load("@rules_python//python:defs.bzl", "py_runtime_pair")
 
 py_runtime(
     name = "py_runtime",
-    files = glob([".venv/**"]),
+    files = glob(
+        [".venv/**"],
+        exclude = [
+            # This is needed because the setuptools package contains file names with spaces,
+            # And Bazel has problems with copying such files.
+            # See https://github.com/bazelbuild/bazel/issues/4327
+            # See https://github.com/pypa/setuptools/issues/134
+            ".venv/**/setuptools/command/launcher manifest.xml",
+            ".venv/**/setuptools/*.tmpl",
+            ]
+        ),
     interpreter = ".venv/bin/python",
     python_version = "PY3",
 )

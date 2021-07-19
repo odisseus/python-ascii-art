@@ -7,11 +7,9 @@ Examples are in the 'pictures' directory, and an explanation of how it works is 
 
 ## Preparing the Python environment
 
-You must execute these commands manually:
+You must execute this command manually:
 ```
 python3 -m venv .venv
-.venv/bin/pip3 install pytest
-.venv/bin/pip3 install Pillow
 ```
 
 ## Running tests

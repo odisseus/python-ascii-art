@@ -1,4 +1,5 @@
 load("@rules_python//python:defs.bzl", "py_runtime_pair")
+load(":label_flags.bzl", "print_output_files", "no_op_rule")
 
 py_runtime(
     name = "py_runtime",
@@ -28,3 +29,9 @@ toolchain(
     toolchain = ":my_py_runtime_pair",
     toolchain_type = "@bazel_tools//tools/python:toolchain_type",
 )
+
+no_op_rule(name = "no-op")
+
+label_flag(name = 'selected-target', build_setting_default = ":no-op")
+
+print_output_files(name = "print-outputs")
